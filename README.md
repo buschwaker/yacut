@@ -70,8 +70,6 @@ pip install -r requirements.txt
 Установите миграции и создайте БД:
 
 ```shell
-flask db init
-flask db migrate
 flask db upgrade
 ```
 
@@ -94,4 +92,4 @@ flask run
 
 Крошко Александром Олеговичем
 
-email: `akroshko1995@gmail.com`
+email: <a href="mailto:akroshko1995@gmail.com">akroshko1995@gmail.com</a>

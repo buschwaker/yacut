@@ -2,27 +2,22 @@ from datetime import datetime
 import random
 import re
 
-from flask import abort
 
 from yacut import (
     db, GET_SHORT_ID_TRIALS, SHORT_URL_SYMBOLS,
     SHORT_URL_SIZE_GENERATE, SHORT_URL_SIZE_MAX, short_url_regex
 )
+from yacut.exceptions import FieldError, ShortUrlGenerateError
 
 
 def get_unique_short_id():
-    countdown = GET_SHORT_ID_TRIALS
-    short_id = False
-    while countdown != 0:
-        countdown -= 1
+    for _ in range(GET_SHORT_ID_TRIALS):
         short_id = ''.join(
-            random.sample(SHORT_URL_SYMBOLS, len(SHORT_URL_SYMBOLS))
-        )[:SHORT_URL_SIZE_GENERATE]
+            random.sample(SHORT_URL_SYMBOLS, SHORT_URL_SIZE_GENERATE)
+        )
         if URL_map.get_url_by_param(short=short_id) is None:
-            break
-    else:
-        abort(500)
-    return short_id
+            return short_id
+    raise ShortUrlGenerateError('Не удалось создать короткую ссылку!')
 
 
 class URL_map(db.Model):
@@ -39,9 +34,9 @@ class URL_map(db.Model):
     @staticmethod
     def validate(data):
         if data is None:
-            raise Exception('Отсутствует тело запроса')
+            raise FieldError('Отсутствует тело запроса')
         if not data.get('url'):
-            raise Exception('\"url\" является обязательным полем!')
+            raise FieldError('\"url\" является обязательным полем!')
         short_url = data.get('custom_id')
         if short_url == '':
             short_url = None
@@ -51,18 +46,19 @@ class URL_map(db.Model):
                 not re.match(short_url_regex, short_url)
         )
         ):
-            raise Exception('Указано недопустимое имя для короткой ссылки')
+            raise FieldError('Указано недопустимое имя для короткой ссылки')
         if (
                 short_url and
                 URL_map.get_url_by_param(short=short_url) is not None
         ):
-            raise Exception(f'Имя "{short_url}" уже занято.')
+            raise FieldError(f'Имя "{short_url}" уже занято.')
 
     @staticmethod
-    def create(obj):
-        db.session.add(obj)
+    def create(**kwargs):
+        url = URL_map(**kwargs)
+        db.session.add(url)
         db.session.commit()
-        return obj
+        return url
 
     @staticmethod
     def deserialize_create(data):

@@ -1,7 +1,9 @@
 from flask import jsonify, request
+from sqlalchemy.exc import SQLAlchemyError
 
 from . import app, localhost
 from .error_handlers import InvalidAPIUsage
+from .exceptions import FieldError, ShortUrlGenerateError
 from .models import URL_map
 
 
@@ -18,9 +20,9 @@ def create_url():
     data = request.get_json()
     try:
         URL_map.validate(data)
-    except Exception as error:
+        url = URL_map.deserialize_create(data)
+    except (FieldError, SQLAlchemyError, ShortUrlGenerateError) as error:
         raise InvalidAPIUsage(str(error))
-    url = URL_map.deserialize_create(data)
     dict_to_return = url.to_dict()
     dict_to_return['short_link'] = localhost + dict_to_return['short_link']
     return jsonify(dict_to_return), 201
