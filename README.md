@@ -67,6 +67,14 @@ python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+Установите миграции и создайте БД:
+
+```shell
+flask db init
+flask db migrate
+flask db upgrade
+```
+
 Добавьте значения переменных окружения в файл .env:
 
 ```shell
@@ -81,3 +89,9 @@ SECRET_KEY
 ```shell
 flask run
 ```
+
+Разработан:
+
+Крошко Александром Олеговичем
+
+email: `akroshko1995@gmail.com`

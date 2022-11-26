@@ -1,8 +1,13 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, URLField
-from wtforms.validators import DataRequired, Length, Optional, Regexp, ValidationError
+from wtforms.validators import (
+    DataRequired, Length, Optional, Regexp, ValidationError
+)
 
-from . import SHORT_URL_SIZE_MAX, SHORT_URL_SIZE_MIN, short_url_regex
+from . import (
+    LONG_URL_SIZE_MAX, LONG_URL_SIZE_MIN,
+    SHORT_URL_SIZE_MAX, SHORT_URL_SIZE_MIN, short_url_regex
+)
 from yacut.models import URL_map
 
 
@@ -23,7 +28,10 @@ class Unique(object):
 class UrlForm(FlaskForm):
     original_link = URLField(
         'Длинная ссылка',
-        validators=[DataRequired(message='Обязательное поле')]
+        validators=[
+            DataRequired(message='Обязательное поле'),
+            Length(LONG_URL_SIZE_MIN, LONG_URL_SIZE_MAX)
+        ]
     )
     custom_id = StringField(
         'Ваш вариант короткой ссылки',
@@ -31,7 +39,8 @@ class UrlForm(FlaskForm):
             Length(SHORT_URL_SIZE_MIN, SHORT_URL_SIZE_MAX), Optional(),
             Regexp(
                 short_url_regex,
-                message='Короткая запись должна включать в себя буквы и/или цифры'
+                message='Короткая запись должна '
+                        'включать в себя буквы и/или цифры'
             ),
             Unique(URL_map, URL_map.short)])
     submit = SubmitField('Создать')

@@ -16,10 +16,11 @@ def get_opinion(short_id):
 @app.route('/api/id/', methods=['POST'])
 def create_url():
     data = request.get_json()
-    URL_map.validate(data)
-    url = URL_map()
-    url.from_dict(data)
-    url = URL_map.create(url)
+    try:
+        URL_map.validate(data)
+    except Exception as error:
+        raise InvalidAPIUsage(str(error))
+    url = URL_map.deserialize_create(data)
     dict_to_return = url.to_dict()
     dict_to_return['short_link'] = localhost + dict_to_return['short_link']
     return jsonify(dict_to_return), 201
