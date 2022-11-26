@@ -4,10 +4,7 @@ from wtforms.validators import (
     DataRequired, Length, Optional, Regexp, ValidationError
 )
 
-from . import (
-    LONG_URL_SIZE_MAX, LONG_URL_SIZE_MIN,
-    SHORT_URL_SIZE_MAX, SHORT_URL_SIZE_MIN, short_url_regex
-)
+from . import LONG_URL_SIZE_MAX, SHORT_URL_SIZE_MAX, short_url_regex
 from yacut.models import URL_map
 
 
@@ -30,13 +27,13 @@ class UrlForm(FlaskForm):
         'Длинная ссылка',
         validators=[
             DataRequired(message='Обязательное поле'),
-            Length(LONG_URL_SIZE_MIN, LONG_URL_SIZE_MAX)
+            Length(0, LONG_URL_SIZE_MAX)
         ]
     )
     custom_id = StringField(
         'Ваш вариант короткой ссылки',
         validators=[
-            Length(SHORT_URL_SIZE_MIN, SHORT_URL_SIZE_MAX), Optional(),
+            Length(0, SHORT_URL_SIZE_MAX), Optional(),
             Regexp(
                 short_url_regex,
                 message='Короткая запись должна '

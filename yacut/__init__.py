@@ -12,9 +12,8 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 SHORT_URL_SIZE_MAX = 16
-SHORT_URL_SIZE_MIN = LONG_URL_SIZE_MIN = 0
 SHORT_URL_SIZE_GENERATE = 6
-LONG_URL_SIZE_MAX = 128
+LONG_URL_SIZE_MAX = 1024
 SHORT_URL_SYMBOLS = string.ascii_letters + string.digits
 GET_SHORT_ID_TRIALS = 5
 localhost = 'http://localhost/'

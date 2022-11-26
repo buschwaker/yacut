@@ -1,6 +1,8 @@
-from flask import abort, redirect, request, render_template, url_for
+from flask import abort, flash, redirect, request, render_template, url_for
+from sqlalchemy.exc import SQLAlchemyError
 
 from . import app
+from .exceptions import ShortUrlGenerateError
 from .forms import UrlForm
 from .models import URL_map
 
@@ -13,11 +15,11 @@ def index():
     original = form.original_link.data
     short = form.custom_id.data
     short = short if short != '' else None
-    url = URL_map(
-        original=original,
-        short=short
-    )
-    url = URL_map.create(url)
+    try:
+        url = URL_map.create(original=original, short=short)
+    except (SQLAlchemyError, ShortUrlGenerateError) as error:
+        flash(str(error))
+        return render_template('index.html', form=form)
     url_result = url_for('go_to_original', postfix=url.short, _external=True)
     return render_template('index.html', form=form, url_result=url_result)
 
