@@ -61,7 +61,7 @@
 
             {% if url_result %}
               <div class="col-sm">
-                <p class="text-center"><h5 class="text-center">Ваша ссылка готова: <a href="{{ url_for('go_to_original', postfix=url_result, _external=True) }}">{{ url_for('go_to_original', postfix=url_result, _external=True) }}</a></h5></p>
+                <p class="text-center"><h5 class="text-center">Ваша ссылка готова: <a href="{{ url_result }}">{{ url_result }}</a></h5></p>
               </div>
             {% endif %}
           <div class="col-sm">
